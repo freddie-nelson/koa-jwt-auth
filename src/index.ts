@@ -7,6 +7,7 @@ import Router from "@koa/router";
 import { bodyParser } from "@koa/bodyparser";
 import { authRouter } from "./routes/auth";
 import { PrismaClient } from "@prisma/client";
+import { userRouter } from "./routes/user";
 
 const app = new Koa();
 app.use(
@@ -19,6 +20,7 @@ app.use(
 const baseRouter = new Router();
 baseRouter.use(rootRouter.routes());
 baseRouter.use(authRouter.routes());
+baseRouter.use(userRouter.routes());
 
 app.use(baseRouter.routes());
 app.use(baseRouter.allowedMethods());

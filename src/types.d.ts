@@ -1,8 +1,8 @@
 import { DefaultContext } from "koa";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 
-// declare module "koa" {
-//   interface DefaultContext {
-//     db: PrismaClient;
-//   }
-// }
+declare module "koa" {
+  interface DefaultContext {
+    user?: User;
+  }
+}

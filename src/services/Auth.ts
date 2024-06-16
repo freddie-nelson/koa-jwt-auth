@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { db } from "./db";
+import { db } from "../helpers/db";
 import { ParameterizedContext } from "koa";
 import { sign, verify } from "jsonwebtoken";
 import { UserModel, mapUserToModel } from "../models/User";
@@ -13,7 +13,7 @@ if (!saltRounds || !jwtSecret || !jwtExpiresIn) {
   throw new Error("Missing environment variables");
 }
 
-export default abstract class Auth {
+export default abstract class AuthService {
   public static readonly JWT_COOKIE_NAME = "token";
 
   /**
