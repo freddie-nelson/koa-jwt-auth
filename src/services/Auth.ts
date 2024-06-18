@@ -125,6 +125,8 @@ export default abstract class AuthService {
   /**
    * Changes the password of the user with the given username
    *
+   * The current password must be correct in order for the password change to be successful
+   *
    * @param username The username of the user
    * @param currentPassword The current password of the user
    * @param newPassword The new password of the user
