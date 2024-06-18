@@ -34,7 +34,7 @@ userRouter.get("user", "/:id", auth, async (ctx) => {
   return successResponse(ctx, mapUserToModel(user));
 });
 
-userRouter.delete("delete-user", "/:id", auth, async (ctx) => {
+userRouter.post("delete-user", "/:id/delete", auth, async (ctx) => {
   const { id } = ctx.params;
 
   const { success: successId, data: userId } = userIdSchema.safeParse(parseInt(id));
@@ -59,6 +59,8 @@ userRouter.delete("delete-user", "/:id", auth, async (ctx) => {
   if ((await AuthService.login(ctx.user.username, password)) === null) {
     return errorResponse(ctx, 401, "Password is incorrect");
   }
+
+  await AuthService.logout(ctx);
 
   const user = await UserService.deleteUserById(userId);
   if (!user) {
