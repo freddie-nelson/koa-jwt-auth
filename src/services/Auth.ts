@@ -44,6 +44,47 @@ export default abstract class AuthService {
   }
 
   /**
+   * Attempts to log in a user with the given ID and password
+   *
+   * @param id The ID of the user
+   * @param password The password of the user
+   *
+   * @returns The user if the login was successful, otherwise null
+   */
+  public static async loginWithId(id: number, password: string): Promise<User | null> {
+    const user = await db.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordCorrect = await this.verifyPassword(password, user.password);
+    if (!isPasswordCorrect) {
+      return null;
+    }
+
+    return user;
+  }
+
+  /**
+   * Logs out the user by clearing the JWT token in the response cookies of the context
+   *
+   * @param ctx The Koa context
+   */
+  public static async logout(ctx: ParameterizedContext) {
+    ctx.cookies.set(this.JWT_COOKIE_NAME, "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+  }
+
+  /**
    * Attempts to register a user with the given email, username, and password
    *
    * @param email The email of the user
@@ -79,6 +120,47 @@ export default abstract class AuthService {
     });
 
     return user;
+  }
+
+  /**
+   * Changes the password of the user with the given username
+   *
+   * @param username The username of the user
+   * @param currentPassword The current password of the user
+   * @param newPassword The new password of the user
+   *
+   * @returns The updated user if the password change was successful, otherwise null
+   */
+  public static async changePassword(
+    username: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<User | null> {
+    const user = await db.user.findUnique({
+      where: {
+        username,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordCorrect = await this.verifyPassword(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      return null;
+    }
+
+    const hashedPassword = await this.hashPassword(newPassword);
+    const updatedUser = await db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return updatedUser;
   }
 
   /**

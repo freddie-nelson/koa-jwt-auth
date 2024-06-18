@@ -6,14 +6,20 @@ import { rootRouter } from "./routes";
 import Router from "@koa/router";
 import { bodyParser } from "@koa/bodyparser";
 import { authRouter } from "./routes/auth";
-import { PrismaClient } from "@prisma/client";
 import { userRouter } from "./routes/user";
+import cors from "@koa/cors";
 
 const app = new Koa();
 app.use(
   bodyParser({
     enableTypes: ["json"],
     encoding: "utf-8",
+  })
+);
+app.use(
+  cors({
+    credentials: true,
+    origin: (ctx) => ctx.request.header.origin || "",
   })
 );
 

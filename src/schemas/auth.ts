@@ -10,11 +10,19 @@ if (!usernameMinLength || !usernameMaxLength || !passwordMinLength) {
   throw new Error("Missing environment variables");
 }
 
+export const usernameSchema = z.string().min(usernameMinLength).max(usernameMaxLength).regex(usernameRegex);
+export const emailSchema = z.string().email();
+export const passwordSchema = z.string().min(passwordMinLength);
+
 export const loginSchema = z.object({
-  username: z.string().min(usernameMinLength).max(usernameMaxLength).regex(usernameRegex),
-  password: z.string().min(passwordMinLength),
+  username: usernameSchema,
+  password: passwordSchema,
 });
 
 export const registerSchema = loginSchema.extend({
-  email: z.string().email(),
+  email: emailSchema,
+});
+
+export const changePasswordSchema = loginSchema.extend({
+  newPassword: passwordSchema,
 });
